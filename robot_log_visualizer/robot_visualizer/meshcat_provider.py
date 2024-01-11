@@ -36,6 +36,8 @@ class MeshcatProvider(QThread):
         self.env_list = ["GAZEBO_MODEL_PATH", "ROS_PACKAGE_PATH", "AMENT_PREFIX_PATH"]
         self._registered_3d_points = set()
 
+        self._realtimeMeshUpdate = False
+
     @property
     def state(self):
         locker = QMutexLocker(self.state_lock)
@@ -188,6 +190,9 @@ class MeshcatProvider(QThread):
 
                 self.meshcat_visualizer_mutex.unlock()
 
+            # If real-time connection is enabled, exit the loop
+            elif self._realtimeMeshUpdate:
+                return
             sleep_time = self._period - (time.time() - start)
             if sleep_time > 0:
                 time.sleep(sleep_time)
@@ -196,17 +201,18 @@ class MeshcatProvider(QThread):
                 return
 
     # For the real-time logger
-    def updateMesh(self):
+    def updateMeshRealtime(self):
         base_rotation = np.eye(3)
         base_position = np.array([0.0, 0.0, 0.0])
 
         self._signal_provider.index = len(self._signal_provider.timestamps) - 1
+        robot_state = self._signal_provider.get_robot_state_at_index(self._signal_provider.index)
+
+        print(robot_state["joints_position"])
         # These are the robot measured joint positions in radians
-        self.meshcat_visualizer.set_multibody_system_state(
-            base_position,
-            base_rotation,
-            joint_value=self._signal_provider.get_joints_position_at_index(
-                self._signal_provider.index
-            )[self.model_joints_index],
+        self._meshcat_visualizer.set_multibody_system_state(
+            base_position=robot_state["base_position"],
+            base_rotation=robot_state["base_orientation"],
+            joint_value=robot_state["joints_position"][self.model_joints_index],
             model_name="robot",
         )
