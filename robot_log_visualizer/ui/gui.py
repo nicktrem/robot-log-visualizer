@@ -232,6 +232,8 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
             self.variableTreeWidget_on_right_click
         )
 
+        self.robotRealtimeVTreeRoot = None
+
         self.robot_state_path = RobotStatePath()
 
         self.pyconsole = PythonConsole(
@@ -705,14 +707,20 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
                 self.ui.yarpTextLogTreeWidget.insertTopLevelItems(0, [items])
             if self.signal_provider.updateMetadata:
                 self.signal_provider.updateMetadata = False
-                root = list(self.signal_provider.data.keys())[0]
-                root_item = QTreeWidgetItem([root])
-                root_item.setFlags(root_item.flags() & ~Qt.ItemIsSelectable)
-                items = self.__populate_variable_tree_widget(
-                    self.signal_provider.data[root], root_item
-                )
-                self.ui.variableTreeWidget.clear()
-                self.ui.variableTreeWidget.insertTopLevelItems(0, [items])
+                diffKeys = []
+                for fullKey in self.signal_provider.metadataDifference.keys():
+                    if fullKey.split("::")[1] in diffKeys:
+                        continue
+                    diffKeys.append(fullKey.split("::")[1])
+                for differenceKey in diffKeys:
+                    root = differenceKey
+                    root_item = QTreeWidgetItem([root])
+                    self.robotRealtimeVTreeRoot.addChild(root_item)
+                    root_item.setFlags(root_item.flags() & ~Qt.ItemIsSelectable)
+                    item = self.__populate_variable_tree_widget(
+                        self.signal_provider.data[self.signal_provider.root_name][root], root_item
+                    )
+                    self.ui.variableTreeWidget.insertTopLevelItem(0, item)
 
             # spawn the console
             self.pyconsole.push_local_ns("data", self.signal_provider.data)
@@ -742,10 +750,10 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
         self.meshcat_provider._realtimeMeshUpdate = True
         # only display one root in the gui
         root = list(self.signal_provider.data.keys())[0]
-        root_item = QTreeWidgetItem([root])
-        root_item.setFlags(root_item.flags() & ~Qt.ItemIsSelectable)
+        self.robotRealtimeVTreeRoot = QTreeWidgetItem([root])
+        self.robotRealtimeVTreeRoot.setFlags(self.robotRealtimeVTreeRoot.flags() & ~Qt.ItemIsSelectable)
         items = self.__populate_variable_tree_widget(
-            self.signal_provider.data[root], root_item
+            self.signal_provider.data[root], self.robotRealtimeVTreeRoot
         )
         self.ui.variableTreeWidget.insertTopLevelItems(0, [items])
 

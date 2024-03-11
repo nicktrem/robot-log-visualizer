@@ -85,6 +85,7 @@ class SignalProvider(QThread):
         self.rtMetadataDict = {}
         self.updateMetadataVal = 0
         self.updateMetadata = False
+        self.metadataDifference = {}
 
     def __populate_text_logging_data(self, file_object):
         data = {}
@@ -263,9 +264,9 @@ class SignalProvider(QThread):
             if self.updateMetadata:
                 self.updateMetadataVal = newMetadataInputVal
                 metadata = self.vectorCollectionsClient.get_metadata().getVectors()
-                difference = { k : metadata[k] for k in set(metadata) - set(self.rtMetadataDict) }
+                self.metadataDifference = { k : metadata[k] for k in set(metadata) - set(self.rtMetadataDict) }
                 self.rtMetadataDict = metadata
-                for keyString, value in difference.items():
+                for keyString, value in self.metadataDifference.items():
                     keys = keyString.split("::")
                     self.__populateRealtimeLoggerMetadata(self.data, keys, value)
 
