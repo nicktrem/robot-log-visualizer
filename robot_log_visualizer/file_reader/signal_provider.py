@@ -80,7 +80,7 @@ class SignalProvider(QThread):
 
         # for networking with the real-time logger
         self.realtimeNetworkInit = False
-        self.vectorCollectionsClient = blf.yarp_utilities.VectorsCollectionClient()
+        self.vectorCollectionsClient = None
         self.trajectory_span = 200
         self.rtMetadataDict = {}
         self.updateMetadataVal = 0
@@ -218,6 +218,7 @@ class SignalProvider(QThread):
             param_handler.set_parameter_string("remote", "/rtLoggingVectorCollections") # you must have some local port as well
             param_handler.set_parameter_string("local", "/visualizerInput") # remote must match the server
             param_handler.set_parameter_string("carrier", "udp")
+            self.vectorCollectionsClient = blf.yarp_utilities.VectorsCollectionClient()
             self.vectorCollectionsClient.initialize(param_handler)
 
             self.vectorCollectionsClient.connect()
@@ -235,11 +236,13 @@ class SignalProvider(QThread):
             del self.data["robot_realtime"]["description_list"]
             del self.data["robot_realtime"]["yarp_robot_name"]
             del self.data["robot_realtime"]["newMetadata"]
+            input = self.vectorCollectionsClient.read_data(True)
 
-        input = self.vectorCollectionsClient.read_data(True)
+        else: 
+            input = self.vectorCollectionsClient.read_data(False)
+
 
         if not input:
-            print("Failed to read realtime YARP port, closing")
             return False
         else:
             # Update the timestamps

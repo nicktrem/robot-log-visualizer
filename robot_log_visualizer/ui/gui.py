@@ -690,12 +690,22 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
             self.__load_mat_file(file_name)
 
     def maintain_connection(self, root):
+        connectionCounter = 0
         while self.realtimeConnectionEnabled:
             if not self.signal_provider.establish_connection():
-                self.realtimeConnectionEnabled = False
-                break
+                connectionCounter = connectionCounter + 1
+                if(connectionCounter > 5):
+                    print("Killing connection")
+                    self.realtimeConnectionEnabled = False
+                    self.signal_provider.realtimeNetworkInit = False
+                    self.signal_provider.data = {}
+                    self.ui.variableTreeWidget.clear()
+                else:
+                    time.sleep(self.animation_period + self.sleepPeriodBuffer)
+                continue
 
             # populate text logging tree
+            connectionCounter = 0
             self.plottingLock.acquire()
             if self.signal_provider.text_logging_data:
                 root = list(self.signal_provider.text_logging_data.keys())[0]
@@ -746,6 +756,8 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
         if not self.signal_provider.establish_connection():
             print("Could not connect to YARP server, closing")
             self.realtimeConnectionEnabled = False
+            self.signal_provider.realtimeNetworkInit = False
+            self.data = {}
             return
         self.meshcat_provider._realtimeMeshUpdate = True
         # only display one root in the gui
