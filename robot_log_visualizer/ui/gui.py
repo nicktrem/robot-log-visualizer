@@ -719,6 +719,7 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
                 self.signal_provider.updateMetadata = False
                 diffKeys = []
                 for fullKey in self.signal_provider.metadataDifference.keys():
+                    # get the key after robot_realtime::
                     if fullKey.split("::")[1] in diffKeys:
                         continue
                     diffKeys.append(fullKey.split("::")[1])
