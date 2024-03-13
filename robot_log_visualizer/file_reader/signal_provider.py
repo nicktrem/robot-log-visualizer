@@ -176,6 +176,11 @@ class SignalProvider(QThread):
             rawData[keys[0]] = {}
 
         if len(keys) == 1:
+            # Check for corrupted data
+            if len(value) == 0:
+                print("\033[91mWarning: empty data for key: " + keys[0] +  " was received! Make sure the metadata is correct.\033[00m")
+                del rawData[keys[0]]
+                return
             rawData[keys[0]]["data"] = np.append(rawData[keys[0]]["data"], value).reshape(-1, len(value))
             rawData[keys[0]]["timestamps"] = np.append(rawData[keys[0]]["timestamps"], recentTimestamp)
 
