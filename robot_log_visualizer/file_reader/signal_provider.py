@@ -215,7 +215,7 @@ class SignalProvider(QThread):
             self.__populateRealtimeLoggerMetadata(rawData[keys[0]], keys[1:], value)
 
 
-    def establish_connection(self):
+    def maintain_connection(self):
         if not self.realtimeNetworkInit:
             yarp.Network.init()
 
