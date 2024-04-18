@@ -306,17 +306,20 @@ class SignalProvider(QThread):
                     break
 
             joint_ref = root_variable["description_list"]
-            self.joints_name = [
-                "".join(chr(c[0]) for c in file[ref]) for ref in joint_ref[0]
-            ]
+            # parse joint_ref depending on how it is stored in the mat file
+            for i in range(len(joint_ref[0])):
+                if root_variable[joint_ref[0][i]].shape[0] >= root_variable[joint_ref[0][i]].shape[1]:
+                    self.joints_name.append("".join(chr(c[0]) for c in root_variable[joint_ref[0][i]]))
+                else:
+                    for c in root_variable[joint_ref[0][i]]:
+                        self.joints_name.append("".join(chr(x) for x in c))
+
+            # parse yarp_robot_name depending on how it is stored in the mat file
             if "yarp_robot_name" in root_variable.keys():
                 robot_name_ref = root_variable["yarp_robot_name"]
-                print(robot_name_ref)
-                print(robot_name_ref.shape)
                 if robot_name_ref.shape[0] >= robot_name_ref.shape[1]:
                     try:
                         self.robot_name = "".join(chr(c[0]) for c in robot_name_ref)
-                        print(self.robot_name)
                     except:
                         pass
                 else:
