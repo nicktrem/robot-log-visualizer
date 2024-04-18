@@ -161,10 +161,14 @@ class SignalProvider(QThread):
                 # In yarp telemetry v0.4.0 the elements_names was saved.
                 if "elements_names" in value.keys():
                     elements_names_ref = value["elements_names"]
-                    data[key]["elements_names"] = [
-                        "".join(chr(c[0]) for c in value[ref])
-                        for ref in elements_names_ref[0]
-                    ]
+                    data[key]["elements_names"] = []
+                    for i in range(len(elements_names_ref[0])):
+                        # check how the string is stored and parse it properly
+                        if value[elements_names_ref[0][i]].shape[0] >= value[elements_names_ref[0][i]].shape[1]:
+                            data[key]["elements_names"].append(["".join(chr(c[0]) for c in value[elements_names_ref[0][i]])][0])
+                        else:
+                            for c in value[elements_names_ref[0][i]]:
+                                data[key]["elements_names"].append(["".join(chr(x) for x in c)][0])
 
             else:
                 data[key] = self.__populate_numerical_data(file_object=value)
