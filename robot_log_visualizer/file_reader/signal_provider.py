@@ -311,10 +311,17 @@ class SignalProvider(QThread):
             ]
             if "yarp_robot_name" in root_variable.keys():
                 robot_name_ref = root_variable["yarp_robot_name"]
-                try:
-                    self.robot_name = "".join(chr(c[0]) for c in robot_name_ref)
-                except:
-                    pass
+                print(robot_name_ref)
+                print(robot_name_ref.shape)
+                if robot_name_ref.shape[0] >= robot_name_ref.shape[1]:
+                    try:
+                        self.robot_name = "".join(chr(c[0]) for c in robot_name_ref)
+                        print(self.robot_name)
+                    except:
+                        pass
+                else:
+                    for c in robot_name_ref:
+                        self.robot_name = "".join(chr(x) for x in c)
             self.index = 0
 
     def __len__(self):
