@@ -232,7 +232,7 @@ class SignalProvider(QThread):
 
             self.vectorCollectionsClient.connect()
             self.realtimeNetworkInit = True
-            self.rtMetadataDict = self.vectorCollectionsClient.get_metadata().getVectors()
+            self.rtMetadataDict = self.vectorCollectionsClient.get_metadata().vectors
             if not self.rtMetadataDict:
                 print("Failed to read realtime YARP port, closing")
                 return False
@@ -245,10 +245,10 @@ class SignalProvider(QThread):
             del self.data["robot_realtime"]["description_list"]
             del self.data["robot_realtime"]["yarp_robot_name"]
             del self.data["robot_realtime"]["newMetadata"]
-            input = self.vectorCollectionsClient.read_data(True)
+            input = self.vectorCollectionsClient.read_data(True).vectors
 
         else: 
-            input = self.vectorCollectionsClient.read_data(False)
+            input = self.vectorCollectionsClient.read_data(False).vectors
 
 
         if not input:
@@ -275,7 +275,7 @@ class SignalProvider(QThread):
             # If there is new metadata, populate it
             if self.updateMetadata:
                 self.updateMetadataVal = newMetadataInputVal
-                metadata = self.vectorCollectionsClient.get_metadata().getVectors()
+                metadata = self.vectorCollectionsClient.get_metadata().vectors
                 self.metadataDifference = { k : metadata[k] for k in set(metadata) - set(self.rtMetadataDict) }
                 self.rtMetadataDict = metadata
                 for keyString, value in self.metadataDifference.items():
