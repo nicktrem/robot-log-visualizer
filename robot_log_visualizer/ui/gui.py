@@ -755,7 +755,6 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
 
         # Do initial connection to populate the necessary data
         if not self.signal_provider.maintain_connection():
-            print("Could not connect to YARP server, closing")
             self.realtimeConnectionEnabled = False
             self.signal_provider.realtimeNetworkInit = False
             self.data = {}
