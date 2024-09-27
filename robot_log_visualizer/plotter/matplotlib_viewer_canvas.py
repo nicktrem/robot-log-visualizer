@@ -72,7 +72,7 @@ class MatplotlibViewerCanvas(FigureCanvas):
             legend_string = "/".join(legend[1:])
 
             #if path_string not in self.active_paths.keys():
-            data = self.signal_provider.data.copy()
+            data = self.signal_provider.data
             for key in path[:-1]:
                 data = data[key]
             try:
