@@ -757,6 +757,7 @@ class RobotViewerMainWindow(QtWidgets.QMainWindow):
         if not self.signal_provider.maintain_connection():
             self.realtimeConnectionEnabled = False
             self.signal_provider.realtimeNetworkInit = False
+            self.signal_provider.root_name = "robot_logger_device"
             self.data = {}
             return
         self.meshcat_provider._realtimeMeshUpdate = True
