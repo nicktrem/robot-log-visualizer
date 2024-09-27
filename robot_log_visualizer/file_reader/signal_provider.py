@@ -231,10 +231,11 @@ class SignalProvider(QThread):
             self.vectorCollectionsClient.initialize(param_handler)
 
             self.vectorCollectionsClient.connect()
-            self.realtimeNetworkInit = True
-            self.rtMetadataDict = self.vectorCollectionsClient.get_metadata().vectors
-            if not self.rtMetadataDict:
-                print("Failed to read realtime YARP port, closing")
+            try:
+                self.rtMetadataDict = self.vectorCollectionsClient.get_metadata().vectors
+            except ValueError:
+                print("Failed to read the metadata from the logger")
+                print("Make sure the logger is running and configured for real-time visualization")
                 return False
 
             self.joints_name = self.rtMetadataDict["robot_realtime::description_list"]
@@ -246,6 +247,8 @@ class SignalProvider(QThread):
             del self.data["robot_realtime"]["yarp_robot_name"]
             del self.data["robot_realtime"]["newMetadata"]
             input = self.vectorCollectionsClient.read_data(True).vectors
+
+            self.realtimeNetworkInit = True
 
         else: 
             input = self.vectorCollectionsClient.read_data(False).vectors
