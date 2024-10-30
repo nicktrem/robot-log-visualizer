@@ -190,11 +190,14 @@ class SignalProvider(QThread):
 
             tempInitialTime = rawData[keys[0]]["timestamps"][0]
             tempEndTime = rawData[keys[0]]["timestamps"][-1]
+            i = 0
             while tempEndTime - tempInitialTime > self.realtimeFixedPlotWindow:
-                rawData[keys[0]]["data"] = np.delete(rawData[keys[0]]["data"], 0, axis=0)
-                rawData[keys[0]]["timestamps"] = np.delete(rawData[keys[0]]["timestamps"], 0)
+                i = i + 1
+                tempInitialTime = rawData[keys[0]]["timestamps"][i]
+            if i > 0:
+                rawData[keys[0]]["data"] = np.delete(rawData[keys[0]]["data"], range(i), axis=0)
+                rawData[keys[0]]["timestamps"] = np.delete(rawData[keys[0]]["timestamps"], range(i))
                 tempInitialTime = rawData[keys[0]]["timestamps"][0]
-                tempEndTime = rawData[keys[0]]["timestamps"][-1]
 
         else:
             self.__populateRealtimeLoggerData(rawData[keys[0]], keys[1:], value, recentTimestamp)
