@@ -6,7 +6,7 @@
 import threading
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QUrl
-from PyQt5.QtCore import pyqtSlot, Qt, QMutex, QMutexLocker, QThread
+from PyQt5.QtCore import pyqtSlot, Qt, QMutex, QMutexLocker
 from PyQt5.QtWidgets import (
     QFileDialog,
     QTreeWidgetItem,
@@ -15,9 +15,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QLineEdit,
     QDialogButtonBox,
-    QTableWidgetItem,
 )
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 
 from robot_log_visualizer.ui.plot_item import PlotItem
 from robot_log_visualizer.ui.video_item import VideoItem
@@ -27,7 +25,6 @@ from robot_log_visualizer.utils.utils import (
     PeriodicThreadState,
     RobotStatePath,
     ColorPalette,
-    Color,
 )
 
 import sys
@@ -50,9 +47,6 @@ from pyqtconsole.console import PythonConsole
 import pyqtconsole.highlighter as hl
 
 import time
-
-import yarp
-
 
 class SetRobotModelDialog(QtWidgets.QDialog):
     def __init__(
