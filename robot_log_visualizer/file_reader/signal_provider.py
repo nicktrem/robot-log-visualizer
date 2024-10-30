@@ -262,11 +262,12 @@ class SignalProvider(QThread):
             self.timestamps = np.append(self.timestamps, recentTimestamp).reshape(-1)
             del input["robot_realtime::timestamps"]
 
+            i = 0
             # Keep the data within the fixed time interval
-            while recentTimestamp - self.timestamps[0] > self.realtimeFixedPlotWindow:
-                self.initial_time = self.timestamps[0]
-                self.end_time = self.timestamps[-1]
-                self.timestamps = np.delete(self.timestamps, 0).reshape(-1)
+            while recentTimestamp - self.timestamps[i] > self.realtimeFixedPlotWindow:
+                i = i + 1
+            if i > 0:
+                self.timestamps = np.delete(self.timestamps, range(i)).reshape(-1)
             self.initial_time = self.timestamps[0]
             self.end_time = self.timestamps[-1]
 
